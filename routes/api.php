@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\SupplierController;
 use Illuminate\Http\Request;
@@ -35,6 +36,18 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/inventory/{id}', 'deleteInventory');
         //search inventory
         Route::get('/search-inventory', 'searchInventory');
+
+    });
+
+      //group routes for event routes
+      Route::controller(EventController::class)->group(function () {
+        Route::post('/event', 'storeEvent');
+        Route::get('/event', 'getEvents');
+        Route::get('/event/{id}', 'getEventById');
+        Route::put('/event/{id}', 'updateEvent');
+        Route::delete('/event/{id}', 'deleteEvent');
+        //search event
+        Route::get('/search-event', 'searchEvent');
 
     });
 });

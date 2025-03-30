@@ -10,6 +10,8 @@ use App\Repositories\API\Auth\PasswordRepository;
 use App\Repositories\API\Auth\PasswordRepositoryInterface;
 use App\Repositories\API\Auth\UserRepository;
 use App\Repositories\API\Auth\UserRepositoryInterface;
+use App\Repositories\API\EventRepository;
+use App\Repositories\API\EventRepositoryInterface;
 use App\Repositories\API\InventoryRepository;
 use App\Repositories\API\InventoryRepositoryInterface;
 use App\Repositories\API\SupplierRepository;
@@ -30,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PasswordRepositoryInterface::class, PasswordRepository::class);
         $this->app->bind(SupplierRepositoryInterface::class, SupplierRepository::class);
         $this->app->bind(InventoryRepositoryInterface::class, InventoryRepository::class);
+        $this->app->bind(EventRepositoryInterface::class, EventRepository::class);
 
         $this->app->bind(PDF::class, PDF::class);
     }

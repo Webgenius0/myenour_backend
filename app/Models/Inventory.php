@@ -17,4 +17,9 @@ class Inventory extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'event_inventory');
+    }
 }
