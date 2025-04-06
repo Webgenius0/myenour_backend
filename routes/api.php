@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\InventoryController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SupplierController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -49,5 +50,11 @@ Route::middleware('auth:api')->group(function () {
         //search event
         Route::get('/search-event', 'searchEvent');
 
+    });
+
+    //Group routes for repoties routes
+    Route::controller(ReportController::class)->group(function () {
+        Route::get('/inventory-report', 'inventoryReport');
+        Route::get('/event-report', 'eventReport');
     });
 });
