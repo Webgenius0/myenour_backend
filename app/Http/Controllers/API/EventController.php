@@ -73,7 +73,7 @@ class EventController extends Controller
     }
     public function searchEvent(Request $request)
     {
-        
+
         try {
             $searchTerm = $request->input('query');
             $events = $this->eventService->searchEvents($searchTerm);
