@@ -12,11 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('suppliers', function (Blueprint $table) {
-            $table->id('supplier_id'); // Auto-incrementing primary key
-            $table->string('supplier_name'); // Supplier name (varchar)
-            $table->string('item_provider'); // Item provider (varchar)
-            $table->integer('order_item'); // Order item count (integer)
-            $table->date('order_date'); // Order date (date)
+            $table->id('supplier_id'); // Changed to 'supplier_id'
+            $table->string('supplier_name');
+            $table->integer('lead_time_days');
+            $table->integer('pack_size_constraint');
             $table->enum('status', ['pending', 'active']); // Status field (enum)
             $table->timestamps();
         });

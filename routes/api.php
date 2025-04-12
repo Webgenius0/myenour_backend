@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\DailyTrackingController;
 use App\Http\Controllers\Api\EventController;
+use App\Http\Controllers\API\EventInventoryController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SupplierController;
@@ -51,10 +53,31 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/search-event', 'searchEvent');
 
     });
+    //group routes for Daily Tracking routes
+    Route::controller(DailyTrackingController::class)->group(function () {
+        Route::post('/daily-tracking', 'updateTracking');
+        Route::get('/daily-tracking', 'index');
+        Route::post('/daily-tracking/return', 'returnToInventory');
+    });
+
 
     //Group routes for repoties routes
     Route::controller(ReportController::class)->group(function () {
         Route::get('/inventory-report', 'inventoryReport');
         Route::get('/event-report', 'eventReport');
     });
+
+    Route::controller(EventInventoryController::class)->group(function () {
+        Route::post('/assign-inventory', 'assignInventory');
+        Route::get('/assigned-inventory/{eventId}', 'getAssignedItems');
+        Route::put('/assigned-inventory/{id}', 'updateAssignedInventory');
+        Route::delete('/assigned-inventory/{id}', 'deleteAssignedInventory');
+        Route::get('/assigned-inventory', 'getAssignedInventory');
+    });
+
+
+    // Route::prefix('events')->group(function () {
+    //     Route::post('assign-inventory', [EventInventoryController::class, 'assignInventory']);
+    //     Route::get('{eventId}/assigned-inventory', [EventInventoryController::class, 'getAssignedItems']);
+    // });
 });

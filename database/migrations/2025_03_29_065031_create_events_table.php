@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('event_name');
-    $table->date('start_event_date');
-    $table->date('end_event_date');
-    $table->integer('total_event_days');
-    $table->enum('status', ['upcoming', 'ongoing', 'completed'])->default('upcoming');
+            $table->date('start_date');
+            $table->integer('number_of_days');
+            $table->json('total_days')->nullable();
+            $table->enum('status', ['upcoming', 'ongoing', 'completed'])->default('upcoming');
             $table->timestamps();
         });
     }

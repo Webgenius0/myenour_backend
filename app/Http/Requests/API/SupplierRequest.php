@@ -24,9 +24,8 @@ class SupplierRequest extends FormRequest
         return [
 
             'supplier_name' => 'required|string|max:255',
-            'item_provider' => 'required|string|max:255',
-            'order_item' => 'required|integer|min:1',
-            'order_date' => 'required|date',
+            'lead_time_days' => 'required|integer|max:255',
+            'pack_size_constraint' => 'required|integer|min:10',
             'status' => 'required|in:pending,active',
         ];
     }
@@ -40,9 +39,8 @@ class SupplierRequest extends FormRequest
     {
         return [
             'supplier_name.required' => 'The supplier name is required.',
-            'item_provider.required' => 'The item provider is required.',
-            'order_item.required' => 'The order item is required.',
-            'order_date.required' => 'The order date is required.',
+            'lead_time_days.required' => 'The item provider is required.',
+            'pack_size_constraint.required' => 'The order item is required.',
             'status.required' => 'The status is required.',
         ];
     }

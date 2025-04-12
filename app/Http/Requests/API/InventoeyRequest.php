@@ -24,11 +24,13 @@ class InventoeyRequest extends FormRequest
         return [
            'supplier_id' => 'required|integer|exists:suppliers,supplier_id',
             'item_name' => 'required|string|max:255',
-            'quantity_in_stock' => 'required|integer|min:0',
+            'current_quantity' => 'required|integer|min:0',
             'min_stock_level' => 'required|integer|min:0',
             'max_stock_level' => 'required|integer|gte:min_stock_level',
+            'incoming_stock'=> 'required|integer|min:0',
             'pack_size' => 'required|integer|min:1'
         ];
+
     }
 
     /**
@@ -47,9 +49,9 @@ class InventoeyRequest extends FormRequest
             'item_name.string' => 'The item name must be a valid string.',
             'item_name.max' => 'The item name should not exceed 255 characters.',
 
-            'quantity_in_stock.required' => 'The quantity in stock is required.',
-            'quantity_in_stock.integer' => 'The quantity must be a valid integer.',
-            'quantity_in_stock.min' => 'The quantity in stock cannot be negative.',
+            'current_quantity.required' => 'The current quantity is required.',
+            'current_quantity.integer' => 'The current quantity must be a valid integer.',
+            'current_quantity.min' => 'The current quantity cannot be negative.',
 
             'min_stock_level.required' => 'The minimum stock level is required.',
             'min_stock_level.integer' => 'The minimum stock level must be an integer.',
@@ -58,6 +60,10 @@ class InventoeyRequest extends FormRequest
             'max_stock_level.required' => 'The maximum stock level is required.',
             'max_stock_level.integer' => 'The maximum stock level must be an integer.',
             'max_stock_level.gte' => 'The maximum stock level must be greater than or equal to the minimum stock level.',
+
+            'incoming_stock.required' => 'Incoming stock is required.',
+            'incoming_stock.integer' => 'Incoming stock must be an integer.',
+            'incoming_stock.min' => 'Incoming stock cannot be negative.',
 
             'pack_size.required' => 'The pack size is required.',
             'pack_size.integer' => 'The pack size must be a valid integer.',

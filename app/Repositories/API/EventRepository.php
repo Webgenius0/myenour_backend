@@ -2,6 +2,7 @@
 
 namespace App\Repositories\API;
 
+use App\Models\DailyTracking;
 use App\Models\Event;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -17,79 +18,131 @@ class EventRepository implements EventRepositoryInterface
             throw $e;
         }
     }
-   public function storeEvent(array $eventData)
-    {
+    public function storeEvent(array $eventData): Event
+{
+    try {
+        DB::beginTransaction();
 
+        // Step 1: Extract and remove inventory items from request
+        $items = $eventData['items'] ?? [];
+        unset($eventData['items']);
 
-        try {
-            return DB::transaction(function () use ($eventData) {
-                // Create the event
-                $event = Event::create([
-                    'event_name' => $eventData['event_name'],
-                    'start_event_date' => $eventData['start_event_date'],
-                    'end_event_date' => $eventData['end_event_date'],
-                    'total_event_days' => $eventData['total_event_days'],
-                    'status' => $eventData['status'],
-                ]);
+        // Step 2: Generate total_days based on number_of_days
+        $numberOfDays = $eventData['number_of_days'] ?? 1;
+        $daysArray = [];
 
-                // Attach multiple inventory IDs
-                $event->inventories()->attach($eventData['inventory_id']); // Array of inventory IDs
+        for ($i = 1; $i <= $numberOfDays; $i++) {
+            $daysArray[] = 'Day ' . $i;
+        }
 
-                return $event;
-            });
-            } catch (\Exception $e) {
-                Log::error("EventRepository::storeEvent", ['error' => $e->getMessage()]);
-                throw $e;
-            }
+        $eventData['total_days'] = $daysArray;
+
+        // Step 3: Create the event with total_days JSON
+        $event = Event::create($eventData);
+
+        // Step 4: Assign inventory items
+        foreach ($items as $item) {
+            $event->assignments()->create([
+                'item_id' => $item['item_id'],
+                'planned_quantity' => $item['planned_quantity'],
+                'used' => $item['used'] ?? null,
+                'remaining' => $item['remaining'] ?? null,
+            ]);
+        }
+
+        DB::commit();
+        return $event;
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error("EventRepository::storeEvent", ['error' => $e->getMessage()]);
+        throw $e;
     }
+}
+
+
+
  public function getEventById($id){
         try{
-            return Event::with('inventories')->find($id);
+            return Event::findOrFail($id);
         }catch(\Exception $e){
             Log::error("EventRepository::getEventById", ['error' => $e->getMessage()]);
             throw $e;
         }
     }
     public function updateEvent(array $eventData, $id)
-    {
-        try {
-            return DB::transaction(function () use ($eventData, $id) {
-                // Find the event
-                $event = Event::findOrFail($id);
+{
+    try {
+        DB::beginTransaction();
 
-                // Update event details
-                $event->update([
-                    'event_name' => $eventData['event_name'],
-                    'start_event_date' => $eventData['start_event_date'],
-                    'end_event_date' => $eventData['end_event_date'],
-                    'total_event_days' => $eventData['total_event_days'],
-                    'status' => $eventData['status'],
-                ]);
+        $event = Event::findOrFail($id);
 
-                // Sync inventory IDs (update pivot table)
-                if (isset($eventData['inventory_id'])) {
-                    $event->inventories()->sync($eventData['inventory_id']); // Replace old IDs with new ones
-                }
+        // Extract items and remove from main payload
+        $items = $eventData['items'] ?? [];
+        unset($eventData['items']);
 
-                return $event;
-            });
-        } catch (\Exception $e) {
-            Log::error("EventRepository::updateEvent", ['error' => $e->getMessage()]);
-            throw $e;
+        // If number_of_days is updated, regenerate total_days
+        if (isset($eventData['number_of_days'])) {
+            $numberOfDays = $eventData['number_of_days'];
+            $daysArray = [];
+
+            for ($i = 1; $i <= $numberOfDays; $i++) {
+                $daysArray[] = 'Day ' . $i;
+            }
+
+            $eventData['total_days'] = $daysArray;
         }
-    }
-    public function deleteEvent($id){
-        try{
-            return Event::with('inventories')->find($id)->delete();
-        }catch(\Exception $e){
-            Log::error("EventRepository::deleteEvent", ['error' => $e->getMessage()]);
-            throw $e;
+
+        // Update event base data
+        $event->update($eventData);
+
+        // Delete old assignments
+        $event->assignments()->delete();
+
+        // Re-insert assignments
+        foreach ($items as $item) {
+            $assignment=  $event->assignments()->create([
+                'item_id' => $item['item_id'],
+                'planned_quantity' => $item['planned_quantity'],
+                'used' => $item['used'] ?? null,
+                'remaining' => $item['remaining'] ?? null,
+            ]);
+            // Update the daily tracking for this item
+            DailyTracking::where('event_id',$id)
+            ->where('item_id',$item['item_id'])
+            ->update(['projected_usage' => $item['planned_quantity']]);
         }
+
+        DB::commit();
+        return $event;
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error("EventRepository::updateEvent", ['error' => $e->getMessage()]);
+        throw $e;
     }
+}
+
+public function deleteEvent($id)
+{
+    try {
+        $event = Event::findOrFail($id);
+
+        // This line is optional if you already have cascade delete on assignments
+        $event->assignments()->delete();
+
+        return $event->delete();
+
+    } catch (\Exception $e) {
+        Log::error("EventRepository::deleteEvent", ['error' => $e->getMessage()]);
+        throw $e;
+    }
+}
+
     public function searchEvents($searchQuery){
         try{
-            
-            return Event::with('inventories')->where('event_name', 'like', '%' . $searchQuery . '%')->get();
+
+            return Event::where('event_name', 'like', '%' . $searchQuery . '%')->get();
         }catch(\Exception $e){
             Log::error("EventRepository::searchEvent", ['error' => $e->getMessage()]);
             throw $e;

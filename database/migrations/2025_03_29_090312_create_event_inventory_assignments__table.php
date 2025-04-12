@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('event_inventory', function (Blueprint $table) {
+        Schema::create('event_inventory_assignments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('event_id');
-        $table->unsignedBigInteger('inventory_id');
-        $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
-        $table->foreign('inventory_id')->references('id')->on('inventories')->onDelete('cascade');
+            $table->unsignedBigInteger('item_id');
+            $table->integer('planned_quantity');
+            $table->integer('used')->nullable();
+            $table->integer('remaining')->nullable();
+            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
+            $table->foreign('item_id')->references('id')->on('inventories')->onDelete('cascade');
             $table->timestamps();
         });
     }

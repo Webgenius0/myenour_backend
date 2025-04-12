@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Inventory extends Model
 {
     protected $table = 'inventories';
-    protected $fillable=['supplier_id','item_name','quantity_in_stock','min_stock_level','max_stock_level','pack_size'];
+    protected $fillable=['supplier_id','item_name','current_quantity','min_stock_level','max_stock_level','incoming_stock','pack_size'];
+
 
     public function supplier()
     {
@@ -20,6 +21,8 @@ class Inventory extends Model
 
     public function events()
     {
-        return $this->belongsToMany(Event::class, 'event_inventory');
+        return $this->belongsToMany(Event::class, 'event_inventory_assignments', 'item_id', 'event_id')
+            ->withPivot('quantity')
+            ->withTimestamps();
     }
 }

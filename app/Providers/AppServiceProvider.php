@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\EventInventoryAssignment;
 use App\Repositories\API\Auth\ForgetPasswordRepository;
 use App\Repositories\API\Auth\ForgetPasswordRepositoryInterface;
 use App\Repositories\API\Auth\OTPRepository;
@@ -10,6 +11,10 @@ use App\Repositories\API\Auth\PasswordRepository;
 use App\Repositories\API\Auth\PasswordRepositoryInterface;
 use App\Repositories\API\Auth\UserRepository;
 use App\Repositories\API\Auth\UserRepositoryInterface;
+use App\Repositories\API\DailyTrackingRepository;
+use App\Repositories\API\DailyTrackingRepositoryInterface;
+use App\Repositories\API\EventInventoryRepository;
+use App\Repositories\API\EventInventoryRepositoryInterface;
 use App\Repositories\API\EventRepository;
 use App\Repositories\API\EventRepositoryInterface;
 use App\Repositories\API\InventoryRepository;
@@ -36,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(InventoryRepositoryInterface::class, InventoryRepository::class);
         $this->app->bind(EventRepositoryInterface::class, EventRepository::class);
         $this->app->bind(ReportRepositoryInterface::class, ReportRepository::class);
+        $this->app->bind(DailyTrackingRepositoryInterface::class, DailyTrackingRepository::class);
+        $this->app->bind(EventInventoryRepositoryInterface::class, EventInventoryRepository::class);
 
         $this->app->bind(PDF::class, PDF::class);
     }
