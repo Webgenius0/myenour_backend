@@ -4,6 +4,7 @@ namespace App\Repositories\API;
 
 use App\Models\DailyTracking;
 use App\Models\Event;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -27,20 +28,23 @@ class EventRepository implements EventRepositoryInterface
         $items = $eventData['items'] ?? [];
         unset($eventData['items']);
 
-        // Step 2: Generate total_days based on number_of_days
+        // Step 2: Extract number_of_days and start_date
         $numberOfDays = $eventData['number_of_days'] ?? 1;
-        $daysArray = [];
+        $startDate = Carbon::parse($eventData['start_date']);
 
-        for ($i = 1; $i <= $numberOfDays; $i++) {
-            $daysArray[] = 'Day ' . $i;
-        }
-
-        $eventData['total_days'] = $daysArray;
-
-        // Step 3: Create the event with total_days JSON
+        // Step 3: Create the event (total_days JSON is no longer needed)
+        unset($eventData['total_days']);
         $event = Event::create($eventData);
 
-        // Step 4: Assign inventory items
+        // Step 4: Create event days dynamically
+        for ($i = 1; $i <= $numberOfDays; $i++) {
+            $event->eventDays()->create([
+                'day_label' =>  $i,
+                'date' => $startDate->copy()->addDays($i - 1),
+            ]);
+        }
+
+        // Step 5: Assign inventory items
         foreach ($items as $item) {
             $event->assignments()->create([
                 'item_id' => $item['item_id'],
@@ -62,9 +66,11 @@ class EventRepository implements EventRepositoryInterface
 
 
 
+
+
  public function getEventById($id){
         try{
-            return Event::findOrFail($id);
+            return Event::with('inventories')->findOrFail($id);
         }catch(\Exception $e){
             Log::error("EventRepository::getEventById", ['error' => $e->getMessage()]);
             throw $e;
@@ -87,7 +93,7 @@ class EventRepository implements EventRepositoryInterface
             $daysArray = [];
 
             for ($i = 1; $i <= $numberOfDays; $i++) {
-                $daysArray[] = 'Day ' . $i;
+                $daysArray[] = 'day ' . $i;
             }
 
             $eventData['total_days'] = $daysArray;

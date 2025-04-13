@@ -35,4 +35,8 @@ class Event extends Model
     {
         return $this->hasMany(DailyTracking::class);
     }
+    public function eventDays(){
+        return $this->hasMany(EventDay::class);
+    }
+
 }

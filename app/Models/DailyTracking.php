@@ -11,6 +11,7 @@ class DailyTracking extends Model
     protected $fillable = [
         'event_id',
         'item_id',
+        'event_day_id',
         'day_number',
         'projected_usage',
         'buffer_percentage',
@@ -31,6 +32,11 @@ public function eventsAssignments()
 {
     return $this->belongsTo(EventInventoryAssignment::class, 'item_id', 'item_id');
 }
+public function eventDay()
+{
+    return $this->belongsTo(EventDay::class, 'event_day_id');
+}
+
 protected $hidden = [
     'created_at',
     'updated_at',
