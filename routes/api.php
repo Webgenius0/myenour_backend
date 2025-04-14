@@ -39,6 +39,7 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/inventory/{id}', 'deleteInventory');
         //search inventory
         Route::get('/search-inventory', 'searchInventory');
+        Route::get('/inventory-filter', 'filteringData');
 
     });
 

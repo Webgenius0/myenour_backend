@@ -9,6 +9,7 @@ interface InventoryRepositoryInterface
     public function getInventoryById($id);
     public function updateInventory($id, array $inventoryData);
     public function deleteInventory($id);
-    public function searchInventory($searchTerm);
+    public function searchInventory($searchQuery);
+    public function filteringData(array $data);
 
 }

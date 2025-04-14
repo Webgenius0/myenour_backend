@@ -69,4 +69,18 @@ class InventoryService
          throw $e;
       }
    }
+
+   public function filteringData(array $data){
+
+    try{
+        // dd($data);
+        $filtering = $this->inventoryRepository->filteringData($data);
+        return $filtering;
+     }catch(\Exception $e){
+        Log::error("InventoryService::filteringData", ['error' => $e->getMessage()]);
+        throw $e;
+     }
+
+
+   }
 }

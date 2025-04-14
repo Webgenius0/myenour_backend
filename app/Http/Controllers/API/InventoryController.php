@@ -107,4 +107,25 @@ class InventoryController extends Controller
         throw $e;
     }
    }
+
+   public function filteringData(Request $request){
+// dd($request);
+   try{
+
+    $filteringData = $this->inventoryService->filteringData($request->all());
+    return response()->json([
+        'success' => true,
+        'status' => 200,
+        'message' => 'Inventory filtering successfully',
+        'data' => $filteringData
+    ], 200);
+
+
+   }catch(\Exception $e){
+    Log::error('InventoryController::filteringData', ['error' => $e->getMessage()]);
+    throw $e;
+}
+
+
+   }
 }

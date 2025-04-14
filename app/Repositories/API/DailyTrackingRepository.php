@@ -15,24 +15,25 @@ use Illuminate\Support\Facades\Log;
 class DailyTrackingRepository implements DailyTrackingRepositoryInterface
 {
     public function load(Request $request)
-    {
-        try {
-            $eventId = $request->input('event_id');
-            $dayNumber = $request->input('day_number');
+{
+    try {
+        $eventId = $request->input('event_id');
+        $dayNumber = $request->input('day_number');
 
-            if (!$eventId || !$dayNumber) {
-                return response()->json(['error' => 'Missing event_id or day_number'], 400);
-            }
+        if (!$eventId || !$dayNumber) {
+            return response()->json(['error' => 'Missing event_id or day_number'], 400);
+        }
 
-            // Load the event
-            $event = Event::findOrFail($eventId);
+        // Load the event
+        $event = Event::findOrFail($eventId);
 
-            // Load data from the view instead of DailyTracking
-            $trackingData = DailyTrackingView::where('event_id', $eventId)
-                ->where('day_number', $dayNumber)
-                ->get()
-                ->keyBy('item_id');
+        // First check if data exists in DailyTrackingView
+        $trackingData = DailyTrackingView::where('event_id', $eventId)
+            ->where('day_number', $dayNumber)
+            ->get();
 
+        // If tracking data exists, map and return it
+        if ($trackingData->isNotEmpty()) {
             $result = $trackingData->map(function ($row) {
                 return [
                     'item_id' => $row->item_id,
@@ -48,20 +49,42 @@ class DailyTrackingRepository implements DailyTrackingRepositoryInterface
                     'supplier_name' => $row->supplier_name,
                 ];
             });
+        } else {
+            // Load from EventInventoryAssignment if no daily tracking exists
+            $assignments = EventInventoryAssignment::with('inventory')
+                ->where('event_id', $eventId)
+                ->get();
 
-            return response()->json([
-                'event' => $event->event_name,
-                'day' => $dayNumber,
-                'items' => $result->values(), // reset keys
-            ]);
-        } catch (\Exception $e) {
-            Log::error("DailyTrackingRepository::load", [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return response()->json(['error' => 'Error loading Daily Tracking'], 500);
+            $result = $assignments->map(function ($assignment) {
+                return [
+                    'item_id' => $assignment->item_id,
+                    'item_name' => optional($assignment->inventory)->item_name,
+                    'planned_quantity' => $assignment->planned_quantity,
+                    'projected_usage' => $assignment->planned_quantity,
+                    'buffer_percentage' => 0,
+                    'start_of_day' => $assignment->remaining ?? 0,
+                    'picked' => 0,
+                    'used' => $assignment->used ?? 0,
+                    'end_of_day' => $assignment->remaining ?? 0,
+                    'current_quantity' => optional($assignment->inventory)->quantity ?? 0,
+                    'supplier_name' => optional($assignment->inventory->supplier)->name ?? '',
+                ];
+            });
         }
+
+        return response()->json([
+            'event' => $event->event_name,
+            'day' => $dayNumber,
+            'items' => $result->values(), // reset keys
+        ]);
+    } catch (\Exception $e) {
+        Log::error("DailyTrackingRepository::load", [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+        return response()->json(['error' => 'Error loading Daily Tracking'], 500);
     }
+}
 
 
 
