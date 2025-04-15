@@ -23,13 +23,23 @@ class ReportService
  }
 
     }
-    public function eventReport($startEventDate, $endEventDate)
+    public function eventReport()
 {
     try {
-        $eventReport = $this->reportRepository->eventReport($startEventDate, $endEventDate);
+        $eventReport = $this->reportRepository->eventReport();
         return $eventReport;
     } catch (\Exception $e) {
         Log::error('ReportService::eventReport', ['error' => $e->getMessage()]);
+        throw $e;
+    }
+}
+    public function orderReport()
+{
+    try {
+        $orderReport = $this->reportRepository->orderReport();
+        return $orderReport;
+    } catch (\Exception $e) {
+        Log::error('ReportService::orderReport', ['error' => $e->getMessage()]);
         throw $e;
     }
 }

@@ -28,14 +28,17 @@ class ReportController extends Controller
     public function eventReport(Request $request)
 {
     try {
-        $startEventDate = $request->input('start_event_date');
-        $endEventDate = $request->input('end_event_date');
+        // $startEventDate = $request->input('start_event_date');
+        // $endEventDate = $request->input('end_event_date');
 
-        if (!$startEventDate || !$endEventDate) {
-            return response()->json(['message' => 'Start and End Event Dates are required.'], 400);
+        // if (!$startEventDate || !$endEventDate) {
+        //     return response()->json(['message' => 'Start and End Event Dates are required.'], 400);
+        // }
+
+        $eventReport = $this->reportService->eventReport();
+        if ($eventReport->isEmpty()) {
+            return response()->json(['message' => 'No event data found.'], 404);
         }
-
-        $eventReport = $this->reportService->eventReport($startEventDate, $endEventDate);
 
         return response()->json([
             'message' => 'Event Report fetched successfully',
@@ -44,6 +47,20 @@ class ReportController extends Controller
     } catch (\Exception $e) {
         Log::error('ReportController::eventReport', ['error' => $e->getMessage()]);
         return response()->json(['message' => 'An error occurred while fetching the event report.'], 500);
+    }
+}
+
+public function orderReport(){
+    // dd('order report');
+    try {
+        $orderReport = $this->reportService->orderReport();
+        if ($orderReport->isEmpty()) {
+            return response()->json(['message' => 'No order data found.'], 404);
+        }
+        return response()->json(['message' => 'Order Report fetched successfully', 'orderReport' => $orderReport], 200);
+    } catch (\Exception $e) {
+        Log::error('ReportController::orderReport', ['error' => $e->getMessage()]);
+        throw $e;
     }
 }
 

@@ -79,6 +79,7 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(ReportController::class)->group(function () {
         Route::get('/inventory-report', 'inventoryReport');
         Route::get('/event-report', 'eventReport');
+        Route::get('/order-report', 'orderReport');
     });
 
     Route::controller(EventInventoryController::class)->group(function () {
