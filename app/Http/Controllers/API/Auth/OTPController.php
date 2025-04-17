@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Auth;
+namespace App\Http\Controllers\Api\Auth;
 
 use App\Exceptions\OTPExpiredException;
 use App\Exceptions\OTPMismatchException;

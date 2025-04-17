@@ -27,7 +27,6 @@ class InventoryRequest extends FormRequest
             'current_quantity' => 'required|integer|min:0',
             'min_stock_level' => 'required|integer|min:0',
             'max_stock_level' => 'required|integer|gte:min_stock_level',
-            'incoming_stock'=> 'required|integer|min:0',
             'pack_size' => 'required|integer|min:1'
         ];
 
@@ -60,10 +59,6 @@ class InventoryRequest extends FormRequest
             'max_stock_level.required' => 'The maximum stock level is required.',
             'max_stock_level.integer' => 'The maximum stock level must be an integer.',
             'max_stock_level.gte' => 'The maximum stock level must be greater than or equal to the minimum stock level.',
-
-            'incoming_stock.required' => 'Incoming stock is required.',
-            'incoming_stock.integer' => 'Incoming stock must be an integer.',
-            'incoming_stock.min' => 'Incoming stock cannot be negative.',
 
             'pack_size.required' => 'The pack size is required.',
             'pack_size.integer' => 'The pack size must be a valid integer.',
