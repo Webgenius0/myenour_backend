@@ -38,7 +38,7 @@ class SupplierRepository implements SupplierRepositoryInterface
             }
 
             if (!empty($data['pack_size_constraint'])) {
-                $query->where('pack_size_constraint', '>=', $data['pack_size_constraint']);
+                $query->where('pack_size_constraint', '=', $data['pack_size_constraint']);
             }
 
             // Always return paginated results

@@ -82,20 +82,23 @@ class InventoryRepository implements InventoryRepositoryInterface
             $query->where('supplier_id', $data['supplier_id']);
         }
 
-        if (!empty($data['min_quantity'])) {
-            $query->where('current_quantity', '>=', $data['min_quantity']);
+        if (!empty($data['current_quantity'])) {
+            $query->where('current_quantity', '=', $data['current_quantity']);
         }
 
-        if (!empty($data['max_quantity'])) {
-            $query->where('current_quantity', '<=', $data['max_quantity']);
+        if (!empty($data['min_stock_level'])) {
+            $query->where('min_stock_level', '=', $data['min_stock_level']);
         }
 
-        if (!empty($data['from_date'])) {
-            $query->whereDate('created_at', '>=', $data['from_date']);
+        if (!empty($data['max_stock_level'])) {
+            $query->where('max_stock_level', '=', $data['max_stock_level']);
         }
 
-        if (!empty($data['to_date'])) {
-            $query->whereDate('created_at', '<=', $data['to_date']);
+        if (!empty($data['incoming_stock'])) {
+            $query->where('incoming_stock', '=', $data['incoming_stock']);
+        }
+        if (!empty($data['pack_size'])) {
+            $query->where('pack_size', '=', $data['pack_size']);
         }
 
         // Always return paginated results
