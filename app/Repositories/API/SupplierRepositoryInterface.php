@@ -13,4 +13,5 @@ interface SupplierRepositoryInterface
     public function updateSupplier(Supplier $supplier, array $data):Supplier;
     public function deleteSupplier($id);
     public function searchSupplier($searchQuery);
+    public function getAllSupplierList();
 }

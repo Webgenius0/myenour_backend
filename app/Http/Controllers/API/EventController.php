@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\EventRequest;
 use App\Services\API\EventService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class EventController extends Controller
 {
@@ -16,14 +17,17 @@ class EventController extends Controller
         $this->eventService = $eventService;
     }
 
-    public function getEvents()
+    public function getEvents(Request $request)
+    {
+
     {
         try {
-            $events = $this->eventService->getEvents();
+            $events = $this->eventService->getEvents($request->all());
             return response()->json(['message' => 'Events fetched successfully', 'events' => $events], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error fetching events', 'error' => $e->getMessage()], 500);
         }
+    }
     }
 
 
@@ -80,6 +84,19 @@ class EventController extends Controller
             return response()->json(['message' => 'Events fetched successfully', 'events' => $events], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error fetching events', 'error' => $e->getMessage()], 500);
+        }
+    }
+    public function getAllEventList()
+    {
+        try {
+            $events = $this->eventService->getAllEventList();
+            if ($events->isEmpty()) {
+                return response()->json(['message' => 'No events found'], 404);
+            }
+            return response()->json(['message' => 'All events fetched successfully', 'events' => $events], 200);
+        } catch (\Exception $e) {
+           Log::error('EventController::getAllEventList', ['error' => $e->getMessage()]);
+            throw $e;
         }
     }
 

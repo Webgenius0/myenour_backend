@@ -111,6 +111,15 @@ class InventoryRepository implements InventoryRepositoryInterface
 }
 
 
+    public function getAllInventoryList(){
+        try{
+            $inventories = Inventory::select('id', 'item_name')->get();
+            return $inventories;
+        }catch(\Exception $e){
+            Log::error("InventoryRepository::getAllInventoryList", ['error' => $e->getMessage()]);
+            throw $e;
+        }
+    }
 
 
 }

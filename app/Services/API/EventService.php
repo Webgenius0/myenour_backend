@@ -14,10 +14,10 @@ class EventService
        $this->eventRepository = $eventRepository;
    }
 
-   public function getEvents()
+   public function getEvents(array $data)
    {
        try {
-           return $this->eventRepository->getEvents();
+           return $this->eventRepository->getEvents($data);
        } catch (\Exception $e) {
            Log::error('EventService::getEvents', ['error' => $e->getMessage()]);
            throw $e;
@@ -66,6 +66,15 @@ class EventService
             return $this->eventRepository->searchEvents($searchQuery);
         } catch (\Exception $e) {
             Log::error('EventService::searchEvent', ['error' => $e->getMessage()]);
+            throw $e;
+        }
+    }
+
+    public function getAllEventList(){
+        try{
+            return $this->eventRepository->getAllEventList();
+        } catch (\Exception $e) {
+            Log::error('EventService::getAllEventList', ['error' => $e->getMessage()]);
             throw $e;
         }
     }

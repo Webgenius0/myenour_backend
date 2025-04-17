@@ -140,5 +140,24 @@ class SupplierController extends Controller
         }
     }
 
+    public function getAllSupplierList(): JsonResponse
+    {
+        try {
+            $suppliers = $this->supplierService->getAllSupplierList();
+            return response()->json([
+                'success' => true,
+                'status' => 200,
+                'data' => $suppliers
+            ]);
+        } catch (\Exception $e) {
+            Log::error('SupplierController::getAllSupplierList', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'status' => 500,
+                'message' => 'Server Error',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
 }

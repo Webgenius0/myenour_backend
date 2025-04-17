@@ -83,4 +83,14 @@ class InventoryService
 
 
    }
+
+    public function getAllInventoryList(){
+        try{
+            $inventories = $this->inventoryRepository->getAllInventoryList();
+            return $inventories;
+        }catch(\Exception $e){
+            Log::error("InventoryService::getAllInventoryList", ['error' => $e->getMessage()]);
+            throw $e;
+        }
+    }
 }

@@ -14,10 +14,10 @@ class OrderService
         $this->orderRepository = $orderRepository;
     }
 
-    public function getAllOrders()
+    public function getAllOrders(array $data)
     {
         try {
-            $orders = $this->orderRepository->getAllOrders();
+            $orders = $this->orderRepository->getAllOrders($data);
             return $orders;
         } catch (\Exception $e) {
             Log::error('OrderService:getAllOrders: ' . $e->getMessage());

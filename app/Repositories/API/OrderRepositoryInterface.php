@@ -4,7 +4,7 @@ namespace App\Repositories\API;
 
 interface OrderRepositoryInterface
 {
-    public function getAllOrders();
+    public function getAllOrders(array $data);
     /**
      * Store a new order.
      *

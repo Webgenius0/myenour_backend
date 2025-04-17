@@ -29,6 +29,8 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/search-supplier', 'searchSupplier');
         //download supplier
         // Route::get('/download-supplier', 'downloadSupplier');
+        //all supplier list
+        Route::get('/all-supplier', 'getAllSupplierList');
     });
 
     //group routes for Inventory routes
@@ -38,8 +40,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/inventory/{id}', 'getInventoryById');
         Route::put('/inventory/{id}', 'updateInventory');
         Route::delete('/inventory/{id}', 'deleteInventory');
+        Route::get('/all-inventory', 'getAllInventoryList');
     });
-    
+
 
       //group routes for event routes
       Route::controller(EventController::class)->group(function () {
@@ -50,6 +53,8 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/event/{id}', 'deleteEvent');
         //search event
         Route::get('/search-event', 'searchEvent');
+        //all event list
+        Route::get('/all-event', 'getAllEventList');
 
     });
 

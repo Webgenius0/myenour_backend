@@ -16,9 +16,9 @@ class OrderController extends Controller
         $this->orderService = $orderService;
     }
 
-    public function getOrders(){
+    public function getOrders(Request $request){
         try{
-            $orders = $this->orderService->getAllOrders();
+            $orders = $this->orderService->getAllOrders($request->all());
             return response()->json([
                 'status' => true,
                 'message' => 'Orders Retrieved Successfully',

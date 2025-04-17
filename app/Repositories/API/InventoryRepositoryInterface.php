@@ -13,5 +13,6 @@ interface InventoryRepositoryInterface
     public function deleteInventory($id);
     public function searchInventory($searchQuery);
     public function filteringData(array $data);
+    public function getAllInventoryList();
 
 }

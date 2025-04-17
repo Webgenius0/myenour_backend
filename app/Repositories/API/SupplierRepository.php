@@ -109,6 +109,16 @@ class SupplierRepository implements SupplierRepositoryInterface
 
 }
 
+public function getAllSupplierList(){
+    try {
+        $suppliers = Supplier::select('supplier_id', 'supplier_name')->get();
+        return $suppliers;
+
+    } catch (\Exception $e) {
+        Log::error("SupplierRepository::getAllSupplierList", ['error' => $e->getMessage()]);
+        throw $e;
+    }
+}
 
 
 

@@ -70,4 +70,13 @@ class SupplierService
         }
     }
 
+    public function getAllSupplierList(){
+        try{
+            return $this->supplierRepository->getAllSupplierList();
+        } catch (\Exception $e) {
+            Log::error('SupplierService::getAllSupplierList', ['error' => $e->getMessage()]);
+            throw $e;
+        }
+    }
+
 }

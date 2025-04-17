@@ -10,15 +10,39 @@ use Illuminate\Support\Facades\Log;
 
 class EventRepository implements EventRepositoryInterface
 {
-    public function getEvents()
+    public function getEvents(array $data)
     {
         try {
-            return Event::with('inventories')->get();
+            $query = Event::with('inventories');
+
+            if (!empty($data['event_name'])) {
+                $query->where('event_name', 'like', '%' . $data['event_name'] . '%');
+            }
+
+            if (!empty($data['start_date'])) {
+                $query->whereDate('start_date', $data['start_date']);
+            }
+
+            if (!empty($data['status'])) {
+                $query->where('status', $data['status']);
+            }
+
+            if (!empty($data['number_of_days'])) {
+                $query->where('number_of_days', $data['number_of_days']);
+            }
+
+            if (!empty($data['total_days'])) {
+                $query->where('total_days', $data['total_days']);
+            }
+
+            return $query->paginate(10); // or ->get() if no pagination needed
+
         } catch (\Exception $e) {
-            Log::error("EventRepository::getAllEvents", ['error' => $e->getMessage()]);
+            Log::error("EventRepository::getEvents", ['error' => $e->getMessage()]);
             throw $e;
         }
     }
+
     public function storeEvent(array $eventData): Event
 {
     try {
@@ -151,6 +175,17 @@ public function deleteEvent($id)
             return Event::where('event_name', 'like', '%' . $searchQuery . '%')->get();
         }catch(\Exception $e){
             Log::error("EventRepository::searchEvent", ['error' => $e->getMessage()]);
+            throw $e;
+        }
+    }
+    public function getAllEventList()
+    {
+        try {
+            $events = Event::select('id', 'event_name')->get();
+            return $events;
+
+        } catch (\Exception $e) {
+            Log::error("EventRepository::getAllEventList", ['error' => $e->getMessage()]);
             throw $e;
         }
     }

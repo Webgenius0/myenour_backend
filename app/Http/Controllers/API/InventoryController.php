@@ -128,4 +128,19 @@ class InventoryController extends Controller
 
 
    }
+
+    public function getAllInventoryList(){
+     try{
+          $inventories = $this->inventoryService->getAllInventoryList();
+          return response()->json([
+                'success' => true,
+                'status' => 200,
+                'message' => 'Inventory retrieved successfully',
+                'data' => $inventories
+          ], 200);
+     }catch(\Exception $e){
+          Log::error('InventoryController::getAllInventoryList', ['error' => $e->getMessage()]);
+          throw $e;
+     }
+    }
 }

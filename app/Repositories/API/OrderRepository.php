@@ -9,15 +9,40 @@ use Illuminate\Support\Facades\Log;
 class OrderRepository implements OrderRepositoryInterface
 {
 
-    public function getAllOrders()
+    public function getAllOrders(array $data)
     {
         try {
-            return Order::with('supplier', 'inventory')->get();
+            $orderQuery = Order::with('supplier', 'inventory');
+
+            if (!empty($data['supplier_id'])) {
+                $orderQuery->where('supplier_id', 'like', '%' . $data['supplier_id'] . '%');
+            }
+
+            if (!empty($data['item_id'])) {
+                $orderQuery->where('item_id', $data['item_id']);
+            }
+
+            if (!empty($data['order_quantity'])) {
+                $orderQuery->where('order_quantity', '>=', $data['order_quantity']);
+            }
+
+            return $orderQuery->paginate(10);
+
         } catch (\Exception $e) {
             Log::error('OrderRepository:getAllOrders: ' . $e->getMessage());
-            return null;
+            return response()->json([
+                'message' => 'Failed to fetch orders.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
+    /**
+     * Store a new order.
+     *
+     * @param array $data
+     * @return \App\Models\Order|null
+     */
+
     public function storeOrder(array $data)
 {
     try {
