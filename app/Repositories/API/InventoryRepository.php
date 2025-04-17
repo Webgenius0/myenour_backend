@@ -73,17 +73,15 @@ class InventoryRepository implements InventoryRepositoryInterface
     try {
         $query = Inventory::query();
 
-        // Filter by item_name (partial match)
+        // Apply filters
         if (!empty($data['item_name'])) {
             $query->where('item_name', 'like', '%' . $data['item_name'] . '%');
         }
 
-        // Filter by supplier_id
         if (!empty($data['supplier_id'])) {
             $query->where('supplier_id', $data['supplier_id']);
         }
 
-        // Filter by current_quantity range
         if (!empty($data['min_quantity'])) {
             $query->where('current_quantity', '>=', $data['min_quantity']);
         }
@@ -92,7 +90,6 @@ class InventoryRepository implements InventoryRepositoryInterface
             $query->where('current_quantity', '<=', $data['max_quantity']);
         }
 
-        // Filter by created_at date range
         if (!empty($data['from_date'])) {
             $query->whereDate('created_at', '>=', $data['from_date']);
         }
@@ -101,13 +98,19 @@ class InventoryRepository implements InventoryRepositoryInterface
             $query->whereDate('created_at', '<=', $data['to_date']);
         }
 
-        return $query->get();
+        // Always return paginated results
+        return $query->paginate(10);
 
     } catch (\Exception $e) {
         Log::error('Inventory filtering failed: ' . $e->getMessage());
-        return collect(); // Return empty collection on failure
+        return response()->json([
+            'message' => 'Failed to fetch inventory.',
+            'error' => $e->getMessage(),
+        ], 500);
     }
 }
+
+
 
 
 }

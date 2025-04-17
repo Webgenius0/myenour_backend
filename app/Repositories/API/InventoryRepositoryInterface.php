@@ -2,6 +2,8 @@
 
 namespace App\Repositories\API;
 
+use Illuminate\Http\Client\Request;
+
 interface InventoryRepositoryInterface
 {
     public function getAllInventory();

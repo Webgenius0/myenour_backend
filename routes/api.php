@@ -34,15 +34,12 @@ Route::middleware('auth:api')->group(function () {
     //group routes for Inventory routes
     Route::controller(InventoryController::class)->group(function () {
         Route::post('/inventory', 'storeInventory');
-        Route::get('/inventory', 'getInventory');
+        Route::get('/inventory', 'filteringData'); // both list and search
         Route::get('/inventory/{id}', 'getInventoryById');
         Route::put('/inventory/{id}', 'updateInventory');
         Route::delete('/inventory/{id}', 'deleteInventory');
-        //search inventory
-        Route::get('/search-inventory', 'searchInventory');
-        Route::get('/inventory-filter', 'filteringData');
-
     });
+    
 
       //group routes for event routes
       Route::controller(EventController::class)->group(function () {
