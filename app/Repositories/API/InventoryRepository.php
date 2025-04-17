@@ -71,7 +71,9 @@ class InventoryRepository implements InventoryRepositoryInterface
     public function filteringData(array $data)
 {
     try {
-        $query = Inventory::query();
+        $query = Inventory::query()->with(['supplier' => function ($q) {
+            $q->select('supplier_id', 'supplier_name'); // 'id' is required to keep the relationship working
+        }]);
 
         // Apply filters
         if (!empty($data['item_name'])) {
