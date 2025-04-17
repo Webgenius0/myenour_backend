@@ -15,9 +15,9 @@ class SupplierService
 
     }
 
-    public function getAllSuppliers(){
+    public function getAllSuppliers(array $data){
         try{
-            return $this->supplierRepository->getAllSuppliers();
+            return $this->supplierRepository->getAllSuppliers($data);
         } catch (\Exception $e) {
             Log::error('SupplierService::getAllSuppliers', ['error' => $e->getMessage()]);
             throw $e;
@@ -69,5 +69,5 @@ class SupplierService
             throw $e;
         }
     }
-   
+
 }

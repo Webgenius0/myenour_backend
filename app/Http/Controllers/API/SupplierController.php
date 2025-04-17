@@ -19,9 +19,9 @@ class SupplierController extends Controller
         $this->supplierService = $supplierService;
     }
 
-    public function getSuppliers(){
+    public function getSuppliers(Request $request){
         try {
-            $suppliers = $this->supplierService->getAllSuppliers();
+            $suppliers = $this->supplierService->getAllSuppliers($request->all());
             return response()->json(
 
                 [
@@ -140,5 +140,5 @@ class SupplierController extends Controller
         }
     }
 
-    
+
 }

@@ -23,9 +23,34 @@ class SupplierRepository implements SupplierRepositoryInterface
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getAllSuppliers()
+    public function getAllSuppliers(array $data)
     {
-        return Supplier::all();
+        try {
+            $query = Supplier::query();
+
+            // Apply filters
+            if (!empty($data['supplier_name'])) {
+                $query->where('supplier_name', 'like', '%' . $data['supplier_name'] . '%');
+            }
+
+            if (!empty($data['lead_time_days'])) {
+                $query->where('lead_time_days', $data['lead_time_days']);
+            }
+
+            if (!empty($data['pack_size_constraint'])) {
+                $query->where('pack_size_constraint', '>=', $data['pack_size_constraint']);
+            }
+
+            // Always return paginated results
+            return $query->paginate(10);
+
+        } catch (\Exception $e) {
+            Log::error('Inventory filtering failed: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to fetch inventory.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
 
