@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\InventoeyRequest;
+use App\Http\Requests\API\InventoryRequest;
 use App\Services\API\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -32,10 +32,10 @@ class InventoryController extends Controller
             throw $e;
         }
     }
-   public function storeInventory(InventoeyRequest $inventoeyRequest){
+   public function storeInventory(InventoryRequest $inventoryRequest){
     try{
 
-       $inventory = $this->inventoryService->storeInventory($inventoeyRequest->all());
+       $inventory = $this->inventoryService->storeInventory($inventoryRequest->all());
        return response()->json([
         'success' => true,
         'status' => 201,
@@ -63,9 +63,9 @@ class InventoryController extends Controller
         throw $e;
     }
    }
-   public function updateInventory($id, InventoeyRequest $inventoeyRequest){
+   public function updateInventory($id, InventoryRequest $inventoryRequest){
     try{
-        $inventory = $this->inventoryService->updateInventory($id, $inventoeyRequest->all());
+        $inventory = $this->inventoryService->updateInventory($id, $inventoryRequest->all());
         return response()->json([
             'success' => true,
             'status' => 200,

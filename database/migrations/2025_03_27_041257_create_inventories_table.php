@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('current_quantity');
             $table->integer('min_stock_level');
             $table->integer('max_stock_level');
-            $table->integer('incoming_stock');
+            $table->integer('incoming_stock')->default(0);
             $table->foreign('supplier_id')->references('supplier_id')->on('suppliers')->onDelete('cascade');
             $table->integer('pack_size');
             $table->timestamps();
