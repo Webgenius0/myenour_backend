@@ -23,7 +23,7 @@ class ReportRepository implements ReportRepositoryInterface
    public function eventReport()
 {
     try {
-        $eventReport = DailyTrackingView::all();
+        $eventReport = Event::all();
         // if ($eventReport->isEmpty()) {
         //     return response()->json(['message' => 'No event data found.'], 404);
         // }

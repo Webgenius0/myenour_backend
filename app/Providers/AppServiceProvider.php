@@ -25,6 +25,8 @@ use App\Repositories\API\OrderRepository;
 use App\Repositories\API\OrderRepositoryInterface;
 use App\Repositories\API\ReportRepository;
 use App\Repositories\API\ReportRepositoryInterface;
+use App\Repositories\API\SettingRepository;
+use App\Repositories\API\SettingRepositoryInterface;
 use App\Repositories\API\SupplierRepository;
 use App\Repositories\API\SupplierRepositoryInterface;
 use Barryvdh\DomPDF\PDF;
@@ -49,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(EventInventoryRepositoryInterface::class, EventInventoryRepository::class);
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(DashboardRepositoryInterface::class, DashboardRepository::class);
+        $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
 
         $this->app->bind(PDF::class, PDF::class);
     }

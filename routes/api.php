@@ -7,6 +7,7 @@ use App\Http\Controllers\API\EventInventoryController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\API\SettingController;
 use App\Http\Controllers\Api\SupplierController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -99,6 +100,12 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/dashboard-upcoming-order', 'upcomingOrders');
     });
 
+    Route::controller(SettingController::class)->group(function () {
+        Route::post('/setting-image', 'updateImage');
+        Route::get('/setting-image', 'getImage');
+        Route::delete('/setting-image', 'deleteImage');
+        // Route::put('/settings', 'updateSettings');
+    });
 
     // Route::prefix('events')->group(function () {
     //     Route::post('assign-inventory', [EventInventoryController::class, 'assignInventory']);
