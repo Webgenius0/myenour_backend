@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\DailyTrackingController;
+use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\API\EventInventoryController;
 use App\Http\Controllers\Api\InventoryController;
@@ -90,6 +91,12 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/assigned-inventory/{id}', 'updateAssignedInventory');
         Route::delete('/assigned-inventory/{id}', 'deleteAssignedInventory');
         Route::get('/assigned-inventory', 'getAssignedInventory');
+    });
+
+    Route::controller(DashboardController::class)->group(function () {
+        Route::get('/dashboard-item', 'getAllItems');
+        Route::get('/dashboard-upcoming-event', 'upcomingEvents');
+        Route::get('/dashboard-upcoming-order', 'upcomingOrders');
     });
 
 

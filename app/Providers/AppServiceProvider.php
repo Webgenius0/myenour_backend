@@ -13,6 +13,8 @@ use App\Repositories\API\Auth\UserRepository;
 use App\Repositories\API\Auth\UserRepositoryInterface;
 use App\Repositories\API\DailyTrackingRepository;
 use App\Repositories\API\DailyTrackingRepositoryInterface;
+use App\Repositories\API\DashboardRepository;
+use App\Repositories\API\DashboardRepositoryInterface;
 use App\Repositories\API\EventInventoryRepository;
 use App\Repositories\API\EventInventoryRepositoryInterface;
 use App\Repositories\API\EventRepository;
@@ -46,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(DailyTrackingRepositoryInterface::class, DailyTrackingRepository::class);
         $this->app->bind(EventInventoryRepositoryInterface::class, EventInventoryRepository::class);
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
+        $this->app->bind(DashboardRepositoryInterface::class, DashboardRepository::class);
 
         $this->app->bind(PDF::class, PDF::class);
     }
