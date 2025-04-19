@@ -181,7 +181,7 @@ public function deleteEvent($id)
     public function getAllEventList()
     {
         try {
-            $events = Event::select('id', 'event_name')->get();
+            $events = Event::select('id', 'event_name','number_of_days')->get();
             return $events;
 
         } catch (\Exception $e) {
