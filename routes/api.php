@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\DailyTrackingController;
 use App\Http\Controllers\API\DashboardController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\API\EventInventoryController;
+use App\Http\Controllers\API\HistoricalDataController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\Api\ReportController;
@@ -106,6 +107,12 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/setting-image', 'deleteImage');
         // Route::put('/settings', 'updateSettings');
     });
+
+    Route::controller(HistoricalDataController::class)->group(function () {
+        Route::get('/historical-data', 'getAllHistoricalData');
+
+    });
+
 
     // Route::prefix('events')->group(function () {
     //     Route::post('assign-inventory', [EventInventoryController::class, 'assignInventory']);

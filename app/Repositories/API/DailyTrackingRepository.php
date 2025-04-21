@@ -184,54 +184,47 @@ class DailyTrackingRepository implements DailyTrackingRepositoryInterface
                          }
                      }
 
-                     // === AUTO UPDATE NEXT DAY IF EXISTS ===
-                     $nextDayId = (int)$eventDayId + 1;
-// dd( $nextDayId);
-$nextDay = EventDay::where('event_id', $eventId)
-->where('day_label', $nextDayId)
-->first();
-// dd($nextDay);
-                     if ($nextDay) {
-                        $nextTracking = DailyTracking::where([
-                            'event_id' => $eventId,
-                            'event_day_id' => $nextDay,
-                            'item_id' => $itemId
-                        ])->first();
-// dd($nextTracking);
-                         // Next day buffer
-                         $nextBufferPercentage = ($nextDayId == 1)
-                             ? ceil($projectedUsage * 0.30)
-                             : (($nextDayId == $totalDays)
-                                 ? ceil($projectedUsage * 0.10)
-                                 : ceil($projectedUsage * 0.15));
 
-                         if ($nextTracking) {
-                             // Update next day tracking
-                             $newStart = $currentTracking->remaining_end ?? 0;
+                  // === AUTO UPDATE NEXT DAY IF EXISTS ===
+$nextDayId = (int)$eventDayId + 1;
 
-                             // Here we set the used value to 0 for the next day
-                             $nextTracking->update([
-                                 'remaining_start' => $newStart,
-                                 'used' => 0,  // Set to 0 as requested
-                                 'buffer_percentage' => $nextBufferPercentage,
-                             ]);
-                         } else {
-                             // Create next day tracking if it doesn't exist
-                             DailyTracking::create([
-                                 'event_id' => $eventId,
-                                 'event_day_id' => $nextDayId,
-                                 'day_number' => $nextDayId,
-                                 'item_id' => $itemId,
-                                 'projected_usage' => $projectedUsage,
-                                 'buffer_percentage' => $nextBufferPercentage,
-                                 'picked' => 0,
-                                 'used' => 0,  // Set to 0 for the next day initially
-                                 'remaining_start' => $currentTracking->remaining_end ?? 0,
-                                 'remaining_end' => 0,
-                             ]);
+if ($nextDayId <= $totalDays) {
+    // Find the corresponding EventDay
+    $nextDay = EventDay::where('event_id', $eventId)
+        ->where('day_label', $nextDayId)
+        ->first();
 
-                         }
-                     }
+    if ($nextDay) {
+        // Buffer percentage for the next day
+        $nextBuffer = 0;
+        if ($nextDayId == 1) {
+            $nextBuffer = ceil($projectedUsage * 0.30);
+        } elseif ($nextDayId == $totalDays) {
+            $nextBuffer = ceil($projectedUsage * 0.10);
+        } else {
+            $nextBuffer = ceil($projectedUsage * 0.15);
+        }
+
+        $nextRemainingStart = $currentTracking->remaining_end ?? 0;
+        $nextPicklistQty =($projectedUsage - $nextRemainingStart);
+
+        $nextTracking = DailyTracking::updateOrCreate(
+            [
+                'event_id' => $eventId,
+                'event_day_id' => $nextDay->id,
+                'day_number' => $nextDayId,
+                'item_id' => $itemId,
+            ],
+            [
+                'projected_usage' => $projectedUsage,
+                'buffer_percentage' => $nextBuffer,
+                'picked' => $nextPicklistQty,
+                'used' => 0,
+                'remaining_start' => $nextRemainingStart,
+                'remaining_end' => 0,
+            ]
+        );
+    }}
                  }
 
                  DB::commit();
