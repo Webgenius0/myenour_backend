@@ -10,4 +10,5 @@ interface EventCategoryRepositoryInterface
     public function updateEventCategory($id, array $eventCategoryData);
     public function deleteEventCategory($id);
     public function getEventCategoryById($id);
+    public function getEventCategoryList();
 }

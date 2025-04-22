@@ -114,6 +114,8 @@ Route::middleware('auth:api')->group(function () {
 
     //Event Category routes
     Route::controller(EventCategoryController::class)->group(function () {
+        // Route::post('/event-category', 'getEventCategory');
+        Route::get('/event-category-list', 'getEventCategoryList');
         Route::post('/event-category', 'storeEventCategory');
         Route::get('/event-category', 'getEventCategories');
         Route::get('/event-category/{id}', 'getEventCategoryById');

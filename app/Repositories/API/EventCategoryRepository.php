@@ -55,4 +55,13 @@ class EventCategoryRepository implements EventCategoryRepositoryInterface
             throw $e;
         }
     }
+    public function getEventCategoryList(){
+        try{
+            $eventCategoryList = EventCategory::all();
+            return $eventCategoryList;
+        }catch (\Exception $e){
+            Log::error('EventCategoryRepository@getEventCategoryList: '.$e->getMessage());
+            throw $e;
+        }
+    }
 }

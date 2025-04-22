@@ -37,6 +37,8 @@ class EventCategoryController extends Controller
     }
   }
 
+
+
   public function storeEventCategory(EventCategoryRequest $request){
     try{
         $eventCategory = $this->eventCategoryService->storeEventCategory($request->validated());
@@ -93,6 +95,28 @@ class EventCategoryController extends Controller
             ]);
         }catch(\Exception $e){
             Log::error('EventCategoryController@getEventCategoryById: '.$e->getMessage());
+            throw $e;
+        }
+    }
+
+
+    public function getEventCategoryList(){
+        try{
+            $eventCategory = $this->eventCategoryService->getEventCategoryList();
+            if($eventCategory->isEmpty()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'No event categories found',
+                    'data' => []
+                ]);
+            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Event categories retrieved successfully',
+                'data' => $eventCategory
+            ]);
+        }catch(\Exception $e){
+            Log::error('EventCategoryController@getEventCategoryList: '.$e->getMessage());
             throw $e;
         }
     }

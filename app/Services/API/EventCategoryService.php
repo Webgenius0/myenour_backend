@@ -57,4 +57,14 @@ class EventCategoryService
             throw $e;
         }
     }
+
+    public function getEventCategoryList()
+    {
+        try{
+            return $this->eventCategoryRepository->getEventCategoryList();
+        }catch (\Exception $e){
+            Log::error('EventCategoryService@getEventCategoryList: '.$e->getMessage());
+            throw $e;
+        }
+    }
 }
