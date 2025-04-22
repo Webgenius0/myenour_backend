@@ -22,6 +22,7 @@ class EventRequest extends FormRequest
     public function rules(): array
     {
         return [
+           'event_category_id' => 'nullable|integer|exists:event_categories,id',
             'event_name' => 'required|string|max:255',
             'start_date' => 'required|date|after_or_equal:today',
             'number_of_days' => 'required|integer|min:1',
@@ -37,6 +38,9 @@ class EventRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'event_category_id.required' => 'Event category is required.',
+            'event_category_id.integer' => 'Event category must be a valid integer.',
+            'event_category_id.exists' => 'Event category must exist.',
             'event_name.required' => 'Event name is required.',
             'event_name.string' => 'Event name must be a string.',
             'event_name.max' => 'Event name cannot be longer than 255 characters.',

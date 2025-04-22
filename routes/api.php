@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DailyTrackingController;
 use App\Http\Controllers\API\DashboardController;
+use App\Http\Controllers\API\EventCategoryController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\API\EventInventoryController;
 use App\Http\Controllers\API\HistoricalDataController;
@@ -54,9 +55,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/event/{id}', 'getEventById');
         Route::put('/event/{id}', 'updateEvent');
         Route::delete('/event/{id}', 'deleteEvent');
-        //search event
         Route::get('/search-event', 'searchEvent');
-        //all event list
         Route::get('/all-event', 'getAllEventList');
 
     });
@@ -113,6 +112,14 @@ Route::middleware('auth:api')->group(function () {
 
     });
 
+    //Event Category routes
+    Route::controller(EventCategoryController::class)->group(function () {
+        Route::post('/event-category', 'storeEventCategory');
+        Route::get('/event-category', 'getEventCategories');
+        Route::get('/event-category/{id}', 'getEventCategoryById');
+        Route::put('/event-category/{id}', 'updateEventCategory');
+        Route::delete('/event-category/{id}', 'deleteEventCategory');
+    }    );
 
     // Route::prefix('events')->group(function () {
     //     Route::post('assign-inventory', [EventInventoryController::class, 'assignInventory']);

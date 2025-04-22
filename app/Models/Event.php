@@ -10,7 +10,7 @@ class Event extends Model
 
 
     protected $fillable = [
-        'event_name', 'start_date', 'number_of_days', 'status', 'total_days',
+        'event_name', 'start_date', 'number_of_days', 'status', 'total_days','event_category_id',
     ];
     public function inventories()
     {
@@ -37,6 +37,10 @@ class Event extends Model
     }
     public function eventDays(){
         return $this->hasMany(EventDay::class);
+    }
+    public function eventCategory()
+    {
+        return $this->belongsTo(EventCategory::class, 'event_category_id');
     }
 
 }

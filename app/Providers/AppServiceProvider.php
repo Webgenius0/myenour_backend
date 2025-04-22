@@ -15,6 +15,8 @@ use App\Repositories\API\DailyTrackingRepository;
 use App\Repositories\API\DailyTrackingRepositoryInterface;
 use App\Repositories\API\DashboardRepository;
 use App\Repositories\API\DashboardRepositoryInterface;
+use App\Repositories\API\EventCategoryRepository;
+use App\Repositories\API\EventCategoryRepositoryInterface;
 use App\Repositories\API\EventInventoryRepository;
 use App\Repositories\API\EventInventoryRepositoryInterface;
 use App\Repositories\API\EventRepository;
@@ -55,6 +57,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(DashboardRepositoryInterface::class, DashboardRepository::class);
         $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
         $this->app->bind(HistoricalDataRepositoryInterface::class, HistoricalDataRepository::class);
+        $this->app->bind(EventCategoryRepositoryInterface::class, EventCategoryRepository::class);
 
         $this->app->bind(PDF::class, PDF::class);
     }

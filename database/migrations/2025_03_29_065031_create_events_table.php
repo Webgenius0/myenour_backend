@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('event_category_id')->constrained('event_categories')->onDelete('cascade');
             $table->string('event_name');
             $table->date('start_date');
             $table->integer('number_of_days');
