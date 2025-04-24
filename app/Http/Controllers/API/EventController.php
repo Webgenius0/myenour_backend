@@ -56,6 +56,7 @@ class EventController extends Controller
     }
     public function updateEvent(EventRequest $eventRequest, $id)
     {
+        // dd($eventRequest);
 
         try {
             $eventData = $eventRequest->validated();

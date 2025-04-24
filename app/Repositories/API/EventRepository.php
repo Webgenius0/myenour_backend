@@ -44,56 +44,49 @@ class EventRepository implements EventRepositoryInterface
     }
 
     public function storeEvent(array $eventData): Event
-    {
-        try {
-            DB::beginTransaction();
+{
+    try {
+        DB::beginTransaction();
 
-            // Step 1: Extract and remove inventory items from request
-            $items = $eventData['items'] ?? [];
-            unset($eventData['items']);
+        // Step 1: Extract and remove inventory items from request
+        $items = $eventData['items'] ?? [];
+        unset($eventData['items']);
 
-            // Step 2: Extract number_of_days and start_date
-            $numberOfDays = $eventData['number_of_days'] ?? 1;
-            $startDate = Carbon::parse($eventData['start_date']);
+        // Step 2: Extract number_of_days and start_date
+        $numberOfDays = $eventData['number_of_days'] ?? 1;
+        $startDate = Carbon::parse($eventData['start_date']);
 
-            // Step 3: Generate and attach total_days
-            $totalDays = [];
-            for ($i = 1; $i <= $numberOfDays; $i++) {
-                $totalDays[] = 'day ' . $i;
-            }
-            $eventData['total_days'] = $totalDays;
+        // Step 3: Create the event (total_days JSON is no longer needed)
+        unset($eventData['total_days']);
+        $event = Event::create($eventData);
 
-            // Step 4: Create the event
-            $event = Event::create($eventData);
-
-            // ✅ Step 5: Create eventDays records in DB
-            for ($i = 1; $i <= $numberOfDays; $i++) {
-                $event->eventDays()->create([
-                    'day_label' => 'day ' . $i,
-                    'date' => $startDate->copy()->addDays($i - 1),
-                ]);
-            }
-
-            // Step 6: Assign inventory items
-            foreach ($items as $item) {
-                $event->assignments()->create([
-                    'item_id' => $item['item_id'],
-                    'planned_quantity' => $item['planned_quantity'],
-                    'used' => $item['used'] ?? null,
-                    'remaining' => $item['remaining'] ?? null,
-                ]);
-            }
-
-            DB::commit();
-            return $event;
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error("EventRepository::storeEvent", ['error' => $e->getMessage()]);
-            throw $e;
+        // Step 4: Create event days dynamically
+        for ($i = 1; $i <= $numberOfDays; $i++) {
+            $event->eventDays()->create([
+                'day_label' =>  $i,
+                'date' => $startDate->copy()->addDays($i - 1),
+            ]);
         }
-    }
 
+        // Step 5: Assign inventory items
+        foreach ($items as $item) {
+            $event->assignments()->create([
+                'item_id' => $item['item_id'],
+                'planned_quantity' => $item['planned_quantity'],
+                'used' => $item['used'] ?? null,
+                'remaining' => $item['remaining'] ?? null,
+            ]);
+        }
+
+        DB::commit();
+        return $event;
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error("EventRepository::storeEvent", ['error' => $e->getMessage()]);
+        throw $e;
+    }
+}
 
 
 
@@ -113,7 +106,7 @@ class EventRepository implements EventRepositoryInterface
         DB::beginTransaction();
 
         $event = Event::findOrFail($id);
-
+// dd($event);
         // Extract items and remove from main payload
         $items = $eventData['items'] ?? [];
         unset($eventData['items']);
@@ -124,9 +117,8 @@ class EventRepository implements EventRepositoryInterface
             $daysArray = [];
 
             for ($i = 1; $i <= $numberOfDays; $i++) {
-                $daysArray[] = 'day ' . $i;
+                $daysArray[] =  $i;
             }
-
 
             $eventData['total_days'] = $daysArray;
         }

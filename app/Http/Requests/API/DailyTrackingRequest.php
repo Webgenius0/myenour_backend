@@ -15,7 +15,7 @@ class DailyTrackingRequest extends FormRequest
     {
         return [
             'event_id' => 'required|exists:events,id',
-            'event_day_id' => 'required|exists:event_days,id',
+            'event_day_id' => 'required|exists:event_days,day_label',
 
             // Allow both single item object or array of objects
             'items' => 'required|array', // Expecting an array for items, even if it's a single object
