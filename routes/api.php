@@ -63,9 +63,9 @@ Route::middleware('auth:api')->group(function () {
 
     //group routes for Daily Tracking routes
     Route::controller(DailyTrackingController::class)->group(function () {
-        Route::post('/daily-tracking', 'updateTracking');
-        Route::get('/daily-tracking', 'index');
         Route::post('/daily-tracking/return', 'returnToInventory');
+        Route::get('/daily-tracking', 'index');
+        Route::post('/daily-tracking', 'updateTracking');
     });
     //group routes for Order routes
     Route::controller(OrderController::class)->group(function () {
