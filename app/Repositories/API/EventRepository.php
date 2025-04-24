@@ -47,7 +47,7 @@ class EventRepository implements EventRepositoryInterface
 {
     try {
         DB::beginTransaction();
-
+// dd($eventData);
         // Step 1: Extract and remove inventory items from request
         $items = $eventData['items'] ?? [];
         unset($eventData['items']);
@@ -56,17 +56,15 @@ class EventRepository implements EventRepositoryInterface
         $numberOfDays = $eventData['number_of_days'] ?? 1;
         $startDate = Carbon::parse($eventData['start_date']);
 
-        // Step 3: Create the event (total_days JSON is no longer needed)
-        unset($eventData['total_days']);
-        $event = Event::create($eventData);
-
-        // Step 4: Create event days dynamically
+        // ✅ Generate total_days like ["day 1", "day 2", ...]
+        $totalDays = [];
         for ($i = 1; $i <= $numberOfDays; $i++) {
-            $event->eventDays()->create([
-                'day_label' =>  $i,
-                'date' => $startDate->copy()->addDays($i - 1),
-            ]);
+            $totalDays[] = 'day ' . $i;
         }
+        $eventData['total_days'] = $totalDays; // keep this
+
+        $event = Event::create($eventData);
+// dd($eventData['total_days']);
 
         // Step 5: Assign inventory items
         foreach ($items as $item) {
@@ -119,6 +117,7 @@ class EventRepository implements EventRepositoryInterface
             for ($i = 1; $i <= $numberOfDays; $i++) {
                 $daysArray[] = 'day ' . $i;
             }
+
 
             $eventData['total_days'] = $daysArray;
         }
