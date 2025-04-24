@@ -26,7 +26,7 @@ class DailyTrackingController extends Controller
    }
    public function updateTracking(DailyTrackingRequest $dailyTrackingRequest,)
    {
-    dd($dailyTrackingRequest->all());
+    // dd($dailyTrackingRequest->all());
 
 
        try {
