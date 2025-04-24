@@ -222,7 +222,7 @@ class DailyTrackingRepository implements DailyTrackingRepositoryInterface
                         [
                             'projected_usage' => $projectedUsage,
                             'buffer_percentage' => $nextBuffer,
-                            'picked' => $nextPicklistQty,
+                            'picked' => 0,
                             'used' => 0,
                             'remaining_start' => $nextRemainingStart,
                             'remaining_end' => 0,
