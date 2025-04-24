@@ -17,67 +17,67 @@ class DailyTrackingRepository implements DailyTrackingRepositoryInterface
     public function load(Request $request)
 {
     try {
-        $eventId = $request->input('event_id');
-        $dayNumber = $request->input('day_number');
+        DB::beginTransaction();
 
-        if (!$eventId || !$dayNumber) {
+        $eventId = $request->input('event_id');
+        $eventDayLabel = $request->input('day_number');
+
+        if (!$eventId || !$eventDayLabel) {
             return response()->json(['error' => 'Missing event_id or day_number'], 400);
         }
 
-        // Load the event
+        // Fetch the event day
+        $eventDay = EventDay::where('event_id', $eventId)
+            ->where('day_label', $eventDayLabel)
+            ->first();
+
+        if (!$eventDay) {
+            DB::rollBack();
+            return response()->json(['error' => 'Invalid event day label: ' . $eventDayLabel], 400);
+        }
+
+        $dayNumber = (int) filter_var($eventDay->day_label, FILTER_SANITIZE_NUMBER_INT);
         $event = Event::findOrFail($eventId);
 
-        // First check if data exists in DailyTrackingView
-        $trackingData = DailyTrackingView::where('event_id', $eventId)
-            ->where('day_number', $dayNumber)
+        // Load assigned items
+        $assignments = EventInventoryAssignment::with(['inventory.supplier'])
+            ->where('event_id', $eventId)
             ->get();
 
-        // If tracking data exists, map and return it
-        if ($trackingData->isNotEmpty()) {
-            $result = $trackingData->map(function ($row) {
-                return [
-                    'item_id' => $row->item_id,
-                    'item_name' => $row->item_name,
-                    'planned_quantity' => $row->planned_quantity,
-                    'projected_usage' => $row->projected_usage,
-                    'buffer_percentage' => $row->buffer_percentage,
-                    'start_of_day' => $row->remaining_start,
-                    'picked' => $row->picked,
-                    'used' => $row->used,
-                    'end_of_day' => $row->remaining_end,
-                    'current_quantity' => $row->current_quantity,
-                    'supplier_name' => $row->supplier_name,
-                ];
-            });
-        } else {
-            // Load from EventInventoryAssignment if no daily tracking exists
-            $assignments = EventInventoryAssignment::with('inventory')
-                ->where('event_id', $eventId)
-                ->get();
+        // Load all tracking data for that day
+        $trackingData = DailyTrackingView::where('event_id', $eventId)
+            ->where('day_number', $dayNumber)
+            ->get()
+            ->keyBy('item_id'); // key by item_id for fast lookup
 
-            $result = $assignments->map(function ($assignment) {
-                return [
-                    'item_id' => $assignment->item_id,
-                    'item_name' => optional($assignment->inventory)->item_name,
-                    'planned_quantity' => $assignment->planned_quantity,
-                    'projected_usage' => $assignment->planned_quantity,
-                    'buffer_percentage' => 0,
-                    'start_of_day' => $assignment->remaining ?? 0,
-                    'picked' => 0,
-                    'used' => $assignment->used ?? 0,
-                    'end_of_day' => $assignment->remaining ?? 0,
-                    'current_quantity' => optional($assignment->inventory)->quantity ?? 0,
-                    'supplier_name' => optional($assignment->inventory->supplier)->name ?? '',
-                ];
-            });
-        }
+        // Merge tracking into assignments
+        $result = $assignments->map(function ($assignment) use ($trackingData) {
+            $itemTracking = $trackingData->get($assignment->item_id);
+
+            return [
+                'item_id' => $assignment->item_id,
+                'item_name' => optional($assignment->inventory)->item_name,
+                'planned_quantity' => $assignment->planned_quantity,
+                'projected_usage' => $assignment->planned_quantity,
+                'buffer_percentage' => $itemTracking->buffer_percentage ?? 0,
+                'start_of_day' => $itemTracking->remaining_start ?? ($assignment->remaining ?? 0),
+                'picked' => $itemTracking->picked ?? 0,
+                'used' => $itemTracking->used ?? ($assignment->used ?? 0),
+                'end_of_day' => $itemTracking->remaining_end ?? ($assignment->remaining ?? 0),
+                'current_quantity' => optional($assignment->inventory)->quantity ?? 0,
+                'supplier_name' => optional($assignment->inventory->supplier)->name ?? '',
+            ];
+        });
+
+        DB::commit();
 
         return response()->json([
             'event' => $event->event_name,
-            'day' => $dayNumber,
-            'items' => $result->values(), // reset keys
+            'day' => $eventDayLabel,
+            'items' => $result->values(),
         ]);
     } catch (\Exception $e) {
+        DB::rollBack();
         Log::error("DailyTrackingRepository::load", [
             'error' => $e->getMessage(),
             'trace' => $e->getTraceAsString(),
@@ -85,6 +85,8 @@ class DailyTrackingRepository implements DailyTrackingRepositoryInterface
         return response()->json(['error' => 'Error loading Daily Tracking'], 500);
     }
 }
+
+
 
 
 
