@@ -73,6 +73,7 @@ class DailyTrackingRepository implements DailyTrackingRepositoryInterface
 
         return response()->json([
             'event' => $event->event_name,
+            'event_category_id' => $event->event_category_id, 
             'day' => $eventDayLabel,
             'items' => $result->values(),
         ]);
